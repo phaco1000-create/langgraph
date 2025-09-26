@@ -3,6 +3,7 @@ from collections.abc import Sequence
 from typing import Union
 
 import pytest
+from typing_extensions import Required
 
 from langgraph._internal._typing import MISSING
 from langgraph.channels.binop import BinaryOperatorAggregate
@@ -88,3 +89,11 @@ def test_binop() -> None:
     checkpoint = channel.checkpoint()
     channel = BinaryOperatorAggregate(int, operator.add).from_checkpoint(checkpoint)
     assert channel.get() == 10
+
+
+def test_binop_required() -> None:
+    channel = BinaryOperatorAggregate(Required[int], operator.add).from_checkpoint(
+        MISSING
+    )
+    assert channel.ValueType is int
+    assert channel.get() == 0

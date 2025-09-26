@@ -167,9 +167,8 @@ def _ensure_future(
         elif EAGER_NOT_SUPPORTED or lazy:
             return loop.create_task(coro_or_future, name=name, context=context)
         else:
-            return asyncio.eager_task_factory(
-                loop, coro_or_future, name=name, context=context
-            )
+            eager_factory = getattr(asyncio, "eager_task_factory")
+            return eager_factory(loop, coro_or_future, name=name, context=context)
     except RuntimeError:
         if not called_wrap_awaitable:
             coro_or_future.close()
